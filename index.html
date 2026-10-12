@@ -16,24 +16,22 @@
 </head>
 <body>
 
-    <!-- This menu interface is hardcoded and cannot show up blank -->
     <div id="launcher">
-        <h3>MvC2 Widescreen Simulation</h3>
-        <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Click below to load your unzipped Marvel vs Capcom 2 .cdi or .gdi game file directly from your local storage.</p>
+        <h3>MvC2 Widescreen Player</h3>
+        <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Select your unzipped Marvel vs Capcom 2 .cdi file from your computer folder to load.</p>
         <label class="btn">
             Choose Game File
             <input type="file" id="file-input" accept=".cdi,.gdi">
         </label>
     </div>
 
-    <!-- Widescreen Responsive Canvas Displays Frame Here -->
     <div id="game-container">
         <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     </div>
 
     <script>
         document.getElementById('file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
+            const file = e.target.files;
             if (!file) return;
             
             document.getElementById('launcher').style.display = 'none';
@@ -42,9 +40,8 @@
             const reader = new FileReader();
             reader.onload = function(evt) {
                 window.romData = new Uint8Array(evt.target.result);
-                console.log("Game asset mounted to local RAM block.");
+                console.log("Game workspace file mounted successfully.");
                 
-                // Triggers stable background open-source WebAssembly architecture core links
                 var script = document.createElement('script');
                 script.src = "https://jsdelivr.net";
                 document.body.appendChild(script);
