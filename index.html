@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace Launcher</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #111; color: #fff; font-family: system-ui, sans-serif; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #drop-zone { border: 2px dashed #444; padding: 50px; border-radius: 12px; text-align: center; background: #1a1a1a; cursor: pointer; transition: 0.2s; max-width: 400px; }
+        #drop-zone:hover { border-color: #007acc; background: #222; }
+        #game-container { display: none; position: relative; width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; background: #000; }
+        canvas { width: 100%; height: 100%; display: block; }
+        .btn { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #007acc; color: #fff; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; }
+        .btn:hover { background: #0062a3; }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Drag & Drop Launcher Area -->
+    <div id="drop-zone">
+        <h3>MvC2 Widescreen Player</h3>
+        <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Drag and drop your game ROM file (.cdi format) here, or click the button below to browse.</p>
+        <label class="btn">
+            Choose Game File
+            <input type="file" id="file-input" accept=".cdi,.gdi">
+        </label>
+    </div>
+
+    <!-- 16:9 True Widescreen Responsive WebGL Canvas Box -->
+    <div id="game-container">
+        <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const gameContainer = document.getElementById('game-container');
+        const fileInput = document.getElementById('file-input');
+
+        // Core Assembly Engine Interface Parameters
+        var Module = {
+            canvas: document.getElementById('canvas'),
+            arguments: ["-widescreen", "1", "-rp", "/gamedata"], // Active instruction to stretch 3D geometry layout engine to 16:9 widescreen natively
+            print: console.log,
+            printErr: console.error,
+            onRuntimeInitialized: function() {
+                console.log("WebAssembly Core System fully initialized.");
+            }
+        };
+
+        // Listeners for uploading or dropping the ROM
+        fileInput.addEventListener('change', (e) => handleGameFile(e.target.files));
+        dropZone.addEventListener('dragover', (e) => e.preventDefault());
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            handleGameFile(e.dataTransfer.files);
+        });
+
+        function handleGameFile(file) {
+            if (!file) return;
+            
+            // Hide menu layout and reveal full canvas display container
+            dropZone.style.display = 'none';
+            gameContainer.style.display = 'block';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Instantly allocate an array structure to pipe local data bytes right into emulator filesystem mounting loop
+                const romBuffer = new Uint8Array(e.target.result);
+                FS.createDataFile('/', 'game.cdi', romBuffer, true, true);
+                console.log("Local ROM loaded into engine workspace memory buffer.");
+                
+                // Initialize execution point
+                if (typeof ccall !== 'undefined') {
+                    Module.ccall('run_emulator', null, [], []);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+
+    <!-- Stable Public open source WebAssembly Framework Integration Script -->
+    <script src="https://jsdelivr.net" async></script>
+</body>
+</html>
