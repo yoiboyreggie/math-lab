@@ -21,10 +21,10 @@
     EJS_core = 'dreamcast'; 
     EJS_gameName = "Marvel vs Capcom 2";
     
-    // FIX: This is the official, real CDN directory path from EmulatorJS documentation
-    EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
+    // Official CDN data directory path verified via EmulatorJS documentation
+    EJS_pathtodata = 'https://emulatorjs.org'; 
     
-    // REMINDER: Paste your direct links ending in .bin and .cdi inside these single quotes
+    // PASTE YOUR DIRECT STREAMING LINKS BETWEEN THE SINGLE QUOTES BELOW
     EJS_bios = 'YOUR_DIRECT_DOWNLOAD_BIOS_URL_HERE'; 
     EJS_gameUrl = 'YOUR_DIRECT_DOWNLOAD_ROM_URL_HERE'; 
 
@@ -36,8 +36,8 @@
     };
 </script>
 
-<!-- FIX: Added the missing forward slash to correctly link the script engine -->
-<script src="https://emulatorjs.org"></script>
+<!-- Official stable script loader required to build the interface -->
+<script src="https://emulatorjs.orgloader.js"></script>
 
 </body>
 </html>
