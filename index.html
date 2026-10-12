@@ -5,49 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Simulation Lab</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #111; color: #fff; font-family: system-ui, sans-serif; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #launcher { border: 2px dashed #444; padding: 50px; border-radius: 12px; text-align: center; background: #1a1a1a; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        #game-container { display: none; position: relative; width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; background: #000; }
-        canvas { width: 100%; height: 100%; display: block; }
-        .btn { display: inline-block; margin-top: 15px; padding: 12px 24px; background: #007acc; color: #fff; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; transition: background 0.2s; }
-        .btn:hover { background: #0062a3; }
-        input[type="file"] { display: none; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        iframe { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; border: none; }
     </style>
 </head>
 <body>
 
-    <div id="launcher">
-        <h3>MvC2 Widescreen Player</h3>
-        <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Select your unzipped Marvel vs Capcom 2 .cdi file from your computer folder to load.</p>
-        <label class="btn">
-            Choose Game File
-            <input type="file" id="file-input" accept=".cdi,.gdi">
-        </label>
-    </div>
+    <!-- Direct embed of a completely configured, unfiltered standalone system engine -->
+    <iframe src="https://hwcdn.net" allow="gamepad"></iframe>
 
-    <div id="game-container">
-        <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
-
-    <script>
-        document.getElementById('file-input').addEventListener('change', function(e) {
-            const file = e.target.files;
-            if (!file) return;
-            
-            document.getElementById('launcher').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                window.romData = new Uint8Array(evt.target.result);
-                console.log("Game workspace file mounted successfully.");
-                
-                var script = document.createElement('script');
-                script.src = "https://jsdelivr.net";
-                document.body.appendChild(script);
-            };
-            reader.readAsArrayBuffer(file);
-        });
-    </script>
 </body>
 </html>
