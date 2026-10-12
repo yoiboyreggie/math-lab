@@ -6,42 +6,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Marvel vs. Capcom 2</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
       width: 100%;
-      height: 100%;
+      min-height: 100%;
       background: #080a12;
       color: white;
       font-family: Arial, sans-serif;
     }
 
     body {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
     header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
-      padding: 12px 18px;
+      padding: 14px 18px;
       background: #151a2a;
     }
 
-    h1 {
-      margin: 0;
-      font-size: 18px;
-    }
+    h1 { margin: 0; font-size: 18px; }
 
-    button {
+    button, .browse {
+      display: inline-block;
       border: 0;
       border-radius: 8px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       background: #e62429;
       color: white;
       font-weight: bold;
@@ -50,67 +47,55 @@
 
     main {
       flex: 1;
-      min-height: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
+      min-height: 70vh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
     }
 
-    #game {
+    #dropzone {
       width: 100%;
-      height: 100%;
-      max-width: calc(100dvh * 16 / 9);
+      max-width: 1000px;
+      min-height: 55vh;
+      border: 3px dashed #596581;
+      border-radius: 16px;
+      background: #101522;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      border: 2px solid #343b55;
-      border-radius: 10px;
-      background: #000;
-      overflow: hidden;
-    }
-
-    #game iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #000;
-    }
-
-    #welcome {
-      max-width: 520px;
-      padding: 24px;
+      align-items: center;
       text-align: center;
+      padding: 28px;
+      transition: background .2s, border-color .2s;
+    }
+
+    #dropzone.dragover {
+      background: #202c47;
+      border-color: #ff454b;
+    }
+
+    .symbol {
+      font-size: 58px;
+      margin-bottom: 10px;
+    }
+
+    #status {
+      overflow-wrap: anywhere;
+      color: #b9c5dc;
       line-height: 1.6;
     }
 
-    #welcome h2 {
-      color: #ff454b;
-    }
+    #fileInput { display: none; }
 
     footer {
-      padding: 8px;
-      color: #aab2c8;
+      padding: 12px;
       text-align: center;
+      color: #aab2c8;
       font-size: 12px;
     }
 
-    @media (max-width: 600px) {
-      header {
-        padding: 10px;
-      }
-
-      h1 {
-        font-size: 15px;
-      }
-
-      main {
-        padding: 4px;
-      }
-
-      #game {
-        max-height: 100%;
-      }
+    @media (min-aspect-ratio: 16/9) {
+      #dropzone { min-height: min(56.25vw, 70vh); }
     }
   </style>
 </head>
@@ -121,31 +106,75 @@
   </header>
 
   <main>
-    <section id="game">
-      <div id="welcome">
-        <h2>Ready to Play?</h2>
-        <p>Your widescreen game area is ready.</p>
-        <p>Next, connect a compatible browser emulator that you are authorized to use.</p>
-      </div>
+    <section id="dropzone" aria-label="Game file drop area">
+      <div class="symbol">🎮</div>
+      <h2>Drop Your Game File Here</h2>
+      <p>Drag a .CDI file from your Chromebook's Files app into this box.</p>
+
+      <label class="browse" for="fileInput">Choose CDI File</label>
+      <input id="fileInput" type="file"
+             accept=".cdi,application/octet-stream">
+
+      <p id="status" role="status">
+        Waiting for a file. Your file stays on this device.
+      </p>
     </section>
   </main>
 
   <footer>
-    Widescreen layout · Chromebook friendly
+    Widescreen layout · Local file selection
   </footer>
 
   <script>
-    const game = document.getElementById("game");
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const status = document.getElementById("status");
+
+    function handleFile(file) {
+      if (!file) return;
+
+      if (!file.name.toLowerCase().endsWith(".cdi")) {
+        status.textContent = "Please choose a .cdi file.";
+        return;
+      }
+
+      status.textContent =
+        `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB). ` +
+        "The file was selected, but a compatible emulator is needed to play it.";
+    }
+
+    fileInput.addEventListener("change", () => {
+      handleFile(fileInput.files[0]);
+    });
+
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropzone.addEventListener(eventName, event => {
+        event.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+      dropzone.addEventListener(eventName, event => {
+        event.preventDefault();
+        dropzone.classList.remove("dragover");
+      });
+    });
+
+    dropzone.addEventListener("drop", event => {
+      handleFile(event.dataTransfer.files[0]);
+    });
 
     document.getElementById("fullscreen").addEventListener("click", async () => {
       try {
         if (!document.fullscreenElement) {
-          await game.requestFullscreen();
+          await document.documentElement.requestFullscreen();
         } else {
           await document.exitFullscreen();
         }
-      } catch (error) {
-        console.error("Fullscreen unavailable:", error);
+      } catch {
+        status.textContent =
+          "Fullscreen wasn't available. Try using your browser's fullscreen option.";
       }
     });
   </script>
