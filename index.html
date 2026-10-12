@@ -1,46 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workspace Simulation</title>
+    <script src="coi-serviceworker.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; }
-        #emulator-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-        #game { width: 100% !important; height: 100% !important; }
+        body, html { margin:0; padding:0; width:100%; height:100%; background:#222; overflow:hidden; font-family:sans-serif; }
+        #canvas-container { display:flex; flex-direction:column; justify-content:center; align-items:center; width:100vw; height:100vh; }
+        canvas { width:100vw !important; height:56.25vw !important; max-height:85vh !important; max-width:177.78vh !important; background:#111; display:none; }
+        #picker-ui { color:#fff; text-align:center; padding:30px; border:2px dashed #555; background:#1a1a1a; border-radius:8px; width:350px; }
+        button { background:#007bff; color:#fff; border:none; padding:12px 24px; font-size:16px; border-radius:4px; cursor:pointer; margin-top:15px; width:100%; font-weight:bold; }
+        button:hover { background:#0056b3; }
+        input[type="file"] { margin: 10px 0 20px 0; color: #ccc; }
+        #status-msg { margin-top: 15px; color: #ffc107; font-size: 14px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-<div id="emulator-container">
-    <div id="game"></div>
+<div id="canvas-container">
+    <div id="picker-ui">
+        <h3>Marvel vs. Capcom 2 Web Terminal</h3>
+        <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Mount assets locally into browser memory:</p>
+        <div style="text-align:left;">
+            <label style="font-weight:bold;">1. System BIOS (dc_boot.bin):</label><br>
+            <input type="file" id="bios-input"><br>
+            <label style="font-weight:bold;">2. Game ROM (Marvel vs Capcom 2.cdi):</label><br>
+            <input type="file" id="game-input">
+        </div>
+        <button id="start-btn">Launch Widescreen Emulator</button>
+        <div id="status-msg"></div>
+    </div>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 </div>
-
 <script>
-    EJS_player = '#game';
-    EJS_core = 'dreamcast'; 
-    EJS_gameName = "Marvel vs Capcom 2";
-    
-    // Safely building the URL so the system filter cannot break it
-    var urlBase = 'https://cdn.' + 'emulatorjs' + '.org/stable/data/';
-    EJS_pathtodata = urlBase; 
-    
-    // PASTE YOUR DIRECT STREAMING LINKS BETWEEN THE SINGLE QUOTES BELOW
-    EJS_bios = 'YOUR_DIRECT_DOWNLOAD_BIOS_URL_HERE'; 
-    EJS_gameUrl = 'YOUR_DIRECT_DOWNLOAD_ROM_URL_HERE'; 
+    var biosFile, gameFile;
+    var status = document.getElementById('status-msg');
+    document.getElementById('bios-input').onchange = function(e) { biosFile = e.target.files[0]; };
+    document.getElementById('game-input').onchange = function(e) { gameFile = e.target.files[0]; };
 
-    EJS_Settings = {
-        widescreen: true, 
-        aspectRatio: "16:9",
-        vSync: false,
-        startInFullscreen: false
+    document.getElementById('start-btn').onclick = function() {
+        if (!biosFile || !gameFile) {
+            status.innerText = "Error: Select BOTH files before booting!";
+            return;
+        }
+        
+        status.innerText = "Reading BIOS file (2MB)...";
+        var reader1 = new FileReader();
+        
+        reader1.onload = function() {
+            var biosData = new Uint8Array(reader1.result);
+            
+            status.innerText = "Reading Game ROM (700MB)... Please wait...";
+            var reader2 = new FileReader();
+            
+            reader2.onload = function() {
+                var gameData = new Uint8Array(reader2.result);
+                
+                status.innerText = "Building Virtual Folders...";
+                document.getElementById('picker-ui').style.display = 'none';
+                document.getElementById('canvas').style.display = 'block';
+                
+                // FIX: Building the exact folder structure Flycast expects inside browser RAM
+                try { FS.mkdir('/retroarch'); } catch(e){}
+                try { FS.mkdir('/retroarch/system'); } catch(e){}
+                
+                // Writing files into their correct expected directory paths
+                FS.writeFile('/retroarch/system/dc_boot.bin', biosData);
+                FS.writeFile('/game.cdi', gameData);
+                
+                // Instruct the emulator arguments to find them
+                Module['arguments'] = ['-bios', '/retroarch/system/dc_boot.bin', '-game', '/game.cdi'];
+                
+                var loadScript = document.createElement('script');
+                loadScript.src = 'build/prod/flycast.js';
+                document.head.appendChild(loadScript);
+            };
+            reader2.readAsArrayBuffer(gameFile);
+        };
+        reader1.readAsArrayBuffer(biosFile);
     };
 
-    // Dynamically loading the script engine so it bypasses the link filter
-    var loaderScript = document.createElement('script');
-    loaderScript.src = urlBase + 'loader.js';
-    document.head.appendChild(loaderScript);
+    var Module = {
+        canvas: document.getElementById('canvas'),
+        print: function(text) { console.log(text); },
+        printErr: function(text) { console.error(text); },
+        preRun: [function() { Module['FS'] = FS; }]
+    };
 </script>
-
 </body>
 </html>
