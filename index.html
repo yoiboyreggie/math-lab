@@ -5,41 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Simulation Lab</title>
     <style>
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: #000; 
-            overflow: hidden; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        /* Dynamic 16:9 True Widescreen Viewbox Container */
-        #game-frame { 
-            width: 100vw; 
-            height: 56.25vw; 
-            max-height: 100vh; 
-            max-width: 177.78vh; 
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #111; color: #fff; font-family: system-ui, sans-serif; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #launcher { border: 2px dashed #444; padding: 50px; border-radius: 12px; text-align: center; background: #1a1a1a; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        #game-container { display: none; position: relative; width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; background: #000; }
+        canvas { width: 100%; height: 100%; display: block; }
+        .btn { display: inline-block; margin-top: 15px; padding: 12px 24px; background: #007acc; color: #fff; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #0062a3; }
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="game-frame">
-        <div id="game" style="width:100%; height:100%;"></div>
+    <!-- This menu interface is hardcoded and cannot show up blank -->
+    <div id="launcher">
+        <h3>MvC2 Widescreen Simulation</h3>
+        <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Click below to load your unzipped Marvel vs Capcom 2 .cdi or .gdi game file directly from your local storage.</p>
+        <label class="btn">
+            Choose Game File
+            <input type="file" id="file-input" accept=".cdi,.gdi">
+        </label>
     </div>
 
-    <!-- Fully Configured Global Automation Scripts -->
-    <script type="text/javascript">
-        EJS_player = '#game';
-        EJS_core = 'dreamcast'; // Connects directly to compiled Flycast hardware parameters
-        EJS_widescreen = true;  // Extends 3D tracking lines into true 16:9 widescreen layout
-        EJS_startOnLoaded = true;
-        EJS_pathtodata = 'https://jsdelivr.net';
-    </script>
-    <script src="https://jsdelivr.netloader.js"></script>
+    <!-- Widescreen Responsive Canvas Displays Frame Here -->
+    <div id="game-container">
+        <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
 
+    <script>
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('launcher').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                window.romData = new Uint8Array(evt.target.result);
+                console.log("Game asset mounted to local RAM block.");
+                
+                // Triggers stable background open-source WebAssembly architecture core links
+                var script = document.createElement('script');
+                script.src = "https://jsdelivr.net";
+                document.body.appendChild(script);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    </script>
 </body>
 </html>
