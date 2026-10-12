@@ -21,10 +21,10 @@
     EJS_core = 'dreamcast'; 
     EJS_gameName = "Marvel vs Capcom 2";
     
-    // Points to the local files inside your repository instead of an outside network
-    EJS_pathtodata = './'; 
+    // Points back to the working stable CDN since you are testing on your laptop network now
+    EJS_pathtodata = 'https://emulatorjs.org'; 
     
-    // Ensure these contain your valid direct streaming links
+    // MAKE SURE THESE SPREADSHEETS END IN .bin AND .cdi AND FORCE DIRECT DOWNLOAD (?dl=1 for dropbox)
     EJS_bios = 'YOUR_DIRECT_DOWNLOAD_BIOS_URL_HERE'; 
     EJS_gameUrl = 'YOUR_DIRECT_DOWNLOAD_ROM_URL_HERE'; 
 
@@ -37,7 +37,7 @@
 </script>
 
 <!-- The core engine loader script -->
-<script src="https://emulatorjs.org"></script>
+<script src="https://emulatorjs.orgloader.js"></script>
 
 </body>
 </html>
