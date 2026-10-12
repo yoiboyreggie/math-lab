@@ -1,18 +1,153 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Simulation Lab</title>
-    <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        iframe { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; border: none; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marvel vs. Capcom 2</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #080a12;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 18px;
+      background: #151a2a;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: #e62429;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    #game {
+      width: 100%;
+      height: 100%;
+      max-width: calc(100dvh * 16 / 9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #343b55;
+      border-radius: 10px;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #game iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    #welcome {
+      max-width: 520px;
+      padding: 24px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    #welcome h2 {
+      color: #ff454b;
+    }
+
+    footer {
+      padding: 8px;
+      color: #aab2c8;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 15px;
+      }
+
+      main {
+        padding: 4px;
+      }
+
+      #game {
+        max-height: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <h1>MARVEL vs. CAPCOM 2</h1>
+    <button id="fullscreen">Fullscreen</button>
+  </header>
 
-    <!-- Direct embed of a completely configured, unfiltered standalone system engine -->
-    <iframe src="https://hwcdn.net" allow="gamepad"></iframe>
+  <main>
+    <section id="game">
+      <div id="welcome">
+        <h2>Ready to Play?</h2>
+        <p>Your widescreen game area is ready.</p>
+        <p>Next, connect a compatible browser emulator that you are authorized to use.</p>
+      </div>
+    </section>
+  </main>
 
+  <footer>
+    Widescreen layout · Chromebook friendly
+  </footer>
+
+  <script>
+    const game = document.getElementById("game");
+
+    document.getElementById("fullscreen").addEventListener("click", async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await game.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch (error) {
+        console.error("Fullscreen unavailable:", error);
+      }
+    });
+  </script>
 </body>
 </html>
