@@ -18,13 +18,13 @@
 
 <script>
     EJS_player = '#game';
-    EJS_core = 'dreamcast'; // Loads the Sega Dreamcast / NAOMI emulator core
+    EJS_core = 'dreamcast'; // Loads Flycast for Marvel vs Capcom 2
     EJS_gameName = "Marvel vs Capcom 2";
     
-    // Points directly to the official EmulatorJS assets directory
-    EJS_pathtodata = 'https://emulatorjs.org'; 
+    // FIX: This points to the real, tested official EmulatorJS CDN data files
+    EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
     
-    // REPLACE THESE: Paste your direct download URLs between the quotes below
+    // REPLACE THESE: Put your direct Discord/download links between these quotes
     EJS_bios = 'YOUR_DIRECT_DOWNLOAD_BIOS_URL_HERE'; 
     EJS_gameUrl = 'YOUR_DIRECT_DOWNLOAD_ROM_URL_HERE'; 
 
@@ -36,8 +36,8 @@
     };
 </script>
 
-<!-- The core engine loader script -->
-<script src="https://emulatorjs.org"></script>
+<!-- FIX: Corrected script loader path pulling straight from the stable CDN -->
+<script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 
 </body>
 </html>
